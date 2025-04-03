@@ -17,7 +17,13 @@ def save_to_mongodb(teams: list, categoria: str):
 
         updated_count = 0
         inserted_count = 0
+        
+        # Primero, eliminar todos los equipos de esta categoría para evitar duplicados
+        delete_result = collection.delete_many({"categoria": categoria})
+        print(f"🗑️ Se eliminaron {delete_result.deleted_count} equipos antiguos de la categoría '{categoria}'")
 
+        # Luego insertar todos los equipos actualizados como nuevos
+        teams_to_insert = []
         for team in teams:
             # Crear una copia limpia del equipo
             formatted_team = {
@@ -35,33 +41,17 @@ def save_to_mongodb(teams: list, categoria: str):
                 "DG": team.get("DG", ""),
                 "Bo": team.get("Bo", ""),
                 "Sa": team.get("Sa", ""),
-                "categoria": categoria  # Usar la categoria que viene de CATEGORIAS_URLS
+                "categoria": categoria,
+                "_id": str(uuid.uuid4())  # Generar un nuevo ID para cada equipo
             }
+            teams_to_insert.append(formatted_team)
 
-            # Crear la query para buscar el documento existente
-            query = {
-                "Pos": formatted_team["Pos"],
-                "categoria": formatted_team["categoria"]
-            }
+        # Insertar todos los equipos de una vez (más eficiente)
+        if teams_to_insert:
+            result = collection.insert_many(teams_to_insert)
+            inserted_count = len(result.inserted_ids)
 
-            # Buscar si existe el documento
-            existing_doc = collection.find_one(query)
-            
-            if existing_doc:
-                # Si existe, actualizar sin el _id
-                if '_id' in formatted_team:
-                    del formatted_team['_id']
-                result = collection.update_one(query, {'$set': formatted_team})
-                if result.modified_count > 0:
-                    updated_count += 1
-            else:
-                # Si no existe, insertar con un nuevo _id
-                formatted_team['_id'] = str(uuid.uuid4())
-                result = collection.insert_one(formatted_team)
-                if result.inserted_id:
-                    inserted_count += 1
-
-        print(f"✅ Se actualizaron {updated_count} equipos y se insertaron {inserted_count} nuevos en MongoDB para la categoría '{categoria}'")
+        print(f"✅ Se insertaron {inserted_count} equipos en MongoDB para la categoría '{categoria}'")
         
         # Cerrar la conexión
         client.close()
