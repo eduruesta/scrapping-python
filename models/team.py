@@ -7,7 +7,7 @@ class Team(BaseModel):
 
     _id: str
     Pos: str
-    Categoria: str
+    categoria: str
     Club: str
     Logo: str
     Pts: str
