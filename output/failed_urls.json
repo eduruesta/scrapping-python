@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "categoria": "Primera A",
+    "url": "https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=1&nombre_torneo=144&subdivision=2"
+  },
+  {
+    "categoria": "Quinta A",
+    "url": "https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=3&nombre_torneo=144&subdivision=2"
+  },
+  {
+    "categoria": "Quinta C",
+    "url": "https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=3&nombre_torneo=99&subdivision=46"
+  },
+  {
+    "categoria": "Séptima C",
+    "url": "https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=5&nombre_torneo=99&subdivision=46"
+  }
+]

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.user.telegrambot</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/eduardoruesta/Workplace/DeepSeek/.conda/bin/python</string>
+        <string>/Users/eduardoruesta/Workplace/DeepSeek/telegram_bot.py</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ProcessType</key>
+    <string>Interactive</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/eduardoruesta/Workplace/DeepSeek/logs/telegram_bot.err</string>
+    <key>StandardOutPath</key>
+    <string>/Users/eduardoruesta/Workplace/DeepSeek/logs/telegram_bot.out</string>
+    <key>WorkingDirectory</key>
+    <string>/Users/eduardoruesta/Workplace/DeepSeek</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/Users/eduardoruesta/Workplace/DeepSeek/.conda/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+    <key>StartInterval</key>
+    <integer>300</integer>
+    <key>StartOnMount</key>
+    <true/>
+    <key>RunOnlyWhenLoggedIn</key>
+    <true/>
+</dict>
+</plist> 

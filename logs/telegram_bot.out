@@ -1,0 +1,269 @@
+[INIT].... → Crawl4AI 0.4.247
+
+🔎 Procesando categoría: Primera A (1/17)
+🔎 Fetching hockey matches from: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=1&nombre_torneo=144&subdivision=2
+[FETCH]... ↓ https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Time: 1.29s
+[SCRAPE].. ◆ Processed https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 17ms
+[LOG] Call LLM for https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=1&nombre_torneo=144&subdivision=2 - block index: 0
+[LOG] Extracted 14 blocks from URL: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=1&nombre_torneo=144&subdivision=2 block index: 0
+[EXTRACT]. ■ Completed for https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 14.791073707863688s
+[COMPLETE] ● https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Total: 16.10s
+✅ Se extrajeron 14 equipos para Primera A.
+Saved 14 teams for category 'Primera A' to 'output/tabla_hockey_primera_a.csv'.
+Fields saved: Pos, categoria, Club, Logo, Pts, PJ, PG, PE, PP, SP, GF, GC, DG, Bo, Sa
+🗑️ Se eliminaron 14 equipos antiguos de la categoría 'Primera A'
+✅ Se insertaron 14 equipos en MongoDB para la categoría 'Primera A'
+💤 Esperando 30 segundos antes de la siguiente categoría...
+
+🔎 Procesando categoría: Intermedia A (2/17)
+🔎 Fetching hockey matches from: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=2&nombre_torneo=144&subdivision=2
+[FETCH]... ↓ https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Time: 0.43s
+[SCRAPE].. ◆ Processed https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 23ms
+[LOG] Call LLM for https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=2&nombre_torneo=144&subdivision=2 - block index: 0
+[LOG] Extracted 14 blocks from URL: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=2&nombre_torneo=144&subdivision=2 block index: 0
+[EXTRACT]. ■ Completed for https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 18.752277958905324s
+[COMPLETE] ● https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Total: 19.21s
+✅ Se extrajeron 14 equipos para Intermedia A.
+Saved 14 teams for category 'Intermedia A' to 'output/tabla_hockey_intermedia_a.csv'.
+Fields saved: Pos, categoria, Club, Logo, Pts, PJ, PG, PE, PP, SP, GF, GC, DG, Bo, Sa
+🗑️ Se eliminaron 14 equipos antiguos de la categoría 'Intermedia A'
+✅ Se insertaron 14 equipos en MongoDB para la categoría 'Intermedia A'
+💤 Esperando 30 segundos antes de la siguiente categoría...
+
+🔎 Procesando categoría: Quinta A (3/17)
+🔎 Fetching hockey matches from: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=3&nombre_torneo=144&subdivision=2
+[FETCH]... ↓ https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Time: 0.44s
+[SCRAPE].. ◆ Processed https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 19ms
+[LOG] Call LLM for https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=3&nombre_torneo=144&subdivision=2 - block index: 0
+[LOG] Extracted 14 blocks from URL: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=3&nombre_torneo=144&subdivision=2 block index: 0
+[EXTRACT]. ■ Completed for https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 12.66549325012602s
+[COMPLETE] ● https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Total: 13.13s
+✅ Se extrajeron 14 equipos para Quinta A.
+Saved 14 teams for category 'Quinta A' to 'output/tabla_hockey_quinta_a.csv'.
+Fields saved: Pos, categoria, Club, Logo, Pts, PJ, PG, PE, PP, SP, GF, GC, DG, Bo, Sa
+🗑️ Se eliminaron 14 equipos antiguos de la categoría 'Quinta A'
+✅ Se insertaron 14 equipos en MongoDB para la categoría 'Quinta A'
+💤 Esperando 30 segundos antes de la siguiente categoría...
+
+🔎 Procesando categoría: Sexta A (4/17)
+🔎 Fetching hockey matches from: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=4&nombre_torneo=144&subdivision=2
+[FETCH]... ↓ https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Time: 0.56s
+[SCRAPE].. ◆ Processed https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 22ms
+[LOG] Call LLM for https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=4&nombre_torneo=144&subdivision=2 - block index: 0
+
+Give Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+Provider List: https://docs.litellm.ai/docs/providers
+
+Rate limit error: litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `deepseek-r1-distill-llama-70b` in organization `org_01jqbzcpw6etw9javte5yyh8qr` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 3911, Requested 2218. Please try again in 1.281999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+Waiting for 2 seconds before retrying...
+[LOG] Extracted 14 blocks from URL: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=4&nombre_torneo=144&subdivision=2 block index: 0
+[EXTRACT]. ■ Completed for https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 23.258855709107593s
+[COMPLETE] ● https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Total: 23.84s
+✅ Se extrajeron 14 equipos para Sexta A.
+Saved 14 teams for category 'Sexta A' to 'output/tabla_hockey_sexta_a.csv'.
+Fields saved: Pos, categoria, Club, Logo, Pts, PJ, PG, PE, PP, SP, GF, GC, DG, Bo, Sa
+🗑️ Se eliminaron 14 equipos antiguos de la categoría 'Sexta A'
+✅ Se insertaron 14 equipos en MongoDB para la categoría 'Sexta A'
+💤 Esperando 30 segundos antes de la siguiente categoría...
+
+🔎 Procesando categoría: Séptima A (5/17)
+🔎 Fetching hockey matches from: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=5&nombre_torneo=144&subdivision=2
+[FETCH]... ↓ https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Time: 0.46s
+[SCRAPE].. ◆ Processed https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 23ms
+[LOG] Call LLM for https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=5&nombre_torneo=144&subdivision=2 - block index: 0
+
+Give Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+Provider List: https://docs.litellm.ai/docs/providers
+
+Rate limit error: litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `deepseek-r1-distill-llama-70b` in organization `org_01jqbzcpw6etw9javte5yyh8qr` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 3957, Requested 2217. Please try again in 1.736999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+Waiting for 2 seconds before retrying...
+[LOG] Extracted 14 blocks from URL: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=5&nombre_torneo=144&subdivision=2 block index: 0
+[EXTRACT]. ■ Completed for https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 16.806077749934047s
+[COMPLETE] ● https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Total: 17.30s
+✅ Se extrajeron 14 equipos para Séptima A.
+Saved 14 teams for category 'Séptima A' to 'output/tabla_hockey_séptima_a.csv'.
+Fields saved: Pos, categoria, Club, Logo, Pts, PJ, PG, PE, PP, SP, GF, GC, DG, Bo, Sa
+🗑️ Se eliminaron 14 equipos antiguos de la categoría 'Séptima A'
+✅ Se insertaron 14 equipos en MongoDB para la categoría 'Séptima A'
+💤 Esperando 30 segundos antes de la siguiente categoría...
+
+🔎 Procesando categoría: Primera B (6/17)
+🔎 Fetching hockey matches from: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=1&nombre_torneo=105&subdivision=27
+[FETCH]... ↓ https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Time: 0.50s
+[SCRAPE].. ◆ Processed https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 23ms
+[LOG] Call LLM for https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=1&nombre_torneo=105&subdivision=27 - block index: 0
+
+Give Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+Provider List: https://docs.litellm.ai/docs/providers
+
+Rate limit error: litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `deepseek-r1-distill-llama-70b` in organization `org_01jqbzcpw6etw9javte5yyh8qr` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 4590, Requested 2344. Please try again in 9.331s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+Waiting for 2 seconds before retrying...
+
+Give Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+Provider List: https://docs.litellm.ai/docs/providers
+
+Rate limit error: litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `deepseek-r1-distill-llama-70b` in organization `org_01jqbzcpw6etw9javte5yyh8qr` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 4338, Requested 2344. Please try again in 6.815999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+Waiting for 4 seconds before retrying...
+
+Give Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+Provider List: https://docs.litellm.ai/docs/providers
+
+Rate limit error: litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `deepseek-r1-distill-llama-70b` in organization `org_01jqbzcpw6etw9javte5yyh8qr` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 3886, Requested 2344. Please try again in 2.295999999s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+[ERROR]... × https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Error: 
+┌───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ × Unexpected error in _crawl_web at line 202 in extract (.conda/lib/python3.12/site-                                  │
+│ packages/crawl4ai/extraction_strategy.py):                                                                            │
+│   Error: 'list' object has no attribute 'usage'                                                                       │
+│                                                                                                                       │
+│   Code context:                                                                                                       │
+│   197               base_url=self.api_base or self.base_url,                                                          │
+│   198               extra_args = self.extra_args                                                                      │
+│   199               ) # , json_response=self.extract_type == "schema")                                                │
+│   200           # Track usage                                                                                         │
+│   201           usage = TokenUsage(                                                                                   │
+│   202 →             completion_tokens=response.usage.completion_tokens,                                               │
+│   203               prompt_tokens=response.usage.prompt_tokens,                                                       │
+│   204               total_tokens=response.usage.total_tokens,                                                         │
+│   205               completion_tokens_details=response.usage.completion_tokens_details.__dict__ if                    │
+│ response.usage.completion_tokens_details else {},                                                                     │
+│   206               prompt_tokens_details=response.usage.prompt_tokens_details.__dict__ if                            │
+│ response.usage.prompt_tokens_details else {}                                                                          │
+│   207           )                                                                                                     │
+└───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+❌ Failed to fetch page: Unexpected error in _crawl_web at line 202 in extract (.conda/lib/python3.12/site-packages/crawl4ai/extraction_strategy.py):
+Error: 'list' object has no attribute 'usage'
+
+Code context:
+ 197               base_url=self.api_base or self.base_url,
+ 198               extra_args = self.extra_args
+ 199               ) # , json_response=self.extract_type == "schema")
+ 200           # Track usage
+ 201           usage = TokenUsage(
+ 202 →             completion_tokens=response.usage.completion_tokens,
+ 203               prompt_tokens=response.usage.prompt_tokens,
+ 204               total_tokens=response.usage.total_tokens,
+ 205               completion_tokens_details=response.usage.completion_tokens_details.__dict__ if response.usage.completion_tokens_details else {},
+ 206               prompt_tokens_details=response.usage.prompt_tokens_details.__dict__ if response.usage.prompt_tokens_details else {}
+ 207           )
+⚠️ No se extrajeron datos para Primera B.
+💤 Esperando 30 segundos antes de la siguiente categoría...
+
+🔎 Procesando categoría: Intermedia B (7/17)
+🔎 Fetching hockey matches from: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=2&nombre_torneo=105&subdivision=27
+[FETCH]... ↓ https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Time: 0.55s
+[SCRAPE].. ◆ Processed https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 18ms
+[LOG] Call LLM for https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=2&nombre_torneo=105&subdivision=27 - block index: 0
+[INIT].... → Crawl4AI 0.4.247
+
+🔎 Procesando categoría: Primera A (1/17)
+🔎 Fetching hockey matches from: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=1&nombre_torneo=144&subdivision=2
+[FETCH]... ↓ https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Time: 1.14s
+[SCRAPE].. ◆ Processed https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 15ms
+[LOG] Call LLM for https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=1&nombre_torneo=144&subdivision=2 - block index: 0
+[LOG] Extracted 14 blocks from URL: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=1&nombre_torneo=144&subdivision=2 block index: 0
+[EXTRACT]. ■ Completed for https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 21.41535433405079s
+[COMPLETE] ● https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Total: 22.57s
+✅ Se extrajeron 14 equipos para Primera A.
+Saved 14 teams for category 'Primera A' to 'output/tabla_hockey_primera_a.csv'.
+Fields saved: Pos, categoria, Club, Logo, Pts, PJ, PG, PE, PP, SP, GF, GC, DG, Bo, Sa
+🗑️ Se eliminaron 14 equipos antiguos de la categoría 'Primera A'
+✅ Se insertaron 14 equipos en MongoDB para la categoría 'Primera A'
+💤 Esperando 30 segundos antes de la siguiente categoría...
+
+🔎 Procesando categoría: Intermedia A (2/17)
+🔎 Fetching hockey matches from: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=2&nombre_torneo=144&subdivision=2
+[FETCH]... ↓ https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Status: True | Time: 0.58s
+[SCRAPE].. ◆ Processed https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Time: 23ms
+[LOG] Call LLM for https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=2&nombre_torneo=144&subdivision=2 - block index: 0
+
+Give Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+Provider List: https://docs.litellm.ai/docs/providers
+
+Rate limit error: litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `deepseek-r1-distill-llama-70b` in organization `org_01jqbzcpw6etw9javte5yyh8qr` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 6024, Requested 2218. Please try again in 22.429s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+Waiting for 2 seconds before retrying...
+
+Give Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+Provider List: https://docs.litellm.ai/docs/providers
+
+Rate limit error: litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `deepseek-r1-distill-llama-70b` in organization `org_01jqbzcpw6etw9javte5yyh8qr` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 5778, Requested 2218. Please try again in 19.959s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+Waiting for 4 seconds before retrying...
+
+Give Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+
+Provider List: https://docs.litellm.ai/docs/providers
+
+Rate limit error: litellm.RateLimitError: RateLimitError: GroqException - {"error":{"message":"Rate limit reached for model `deepseek-r1-distill-llama-70b` in organization `org_01jqbzcpw6etw9javte5yyh8qr` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Used 5332, Requested 2218. Please try again in 15.498s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"tokens","code":"rate_limit_exceeded"}}
+
+[ERROR]... × https://www.ahba.com.ar/club.php?id=173&seccion=TA... | Error: 
+┌───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ × Unexpected error in _crawl_web at line 202 in extract (.conda/lib/python3.12/site-                                  │
+│ packages/crawl4ai/extraction_strategy.py):                                                                            │
+│   Error: 'list' object has no attribute 'usage'                                                                       │
+│                                                                                                                       │
+│   Code context:                                                                                                       │
+│   197               base_url=self.api_base or self.base_url,                                                          │
+│   198               extra_args = self.extra_args                                                                      │
+│   199               ) # , json_response=self.extract_type == "schema")                                                │
+│   200           # Track usage                                                                                         │
+│   201           usage = TokenUsage(                                                                                   │
+│   202 →             completion_tokens=response.usage.completion_tokens,                                               │
+│   203               prompt_tokens=response.usage.prompt_tokens,                                                       │
+│   204               total_tokens=response.usage.total_tokens,                                                         │
+│   205               completion_tokens_details=response.usage.completion_tokens_details.__dict__ if                    │
+│ response.usage.completion_tokens_details else {},                                                                     │
+│   206               prompt_tokens_details=response.usage.prompt_tokens_details.__dict__ if                            │
+│ response.usage.prompt_tokens_details else {}                                                                          │
+│   207           )                                                                                                     │
+└───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+❌ Failed to fetch page: Unexpected error in _crawl_web at line 202 in extract (.conda/lib/python3.12/site-packages/crawl4ai/extraction_strategy.py):
+Error: 'list' object has no attribute 'usage'
+
+Code context:
+ 197               base_url=self.api_base or self.base_url,
+ 198               extra_args = self.extra_args
+ 199               ) # , json_response=self.extract_type == "schema")
+ 200           # Track usage
+ 201           usage = TokenUsage(
+ 202 →             completion_tokens=response.usage.completion_tokens,
+ 203               prompt_tokens=response.usage.prompt_tokens,
+ 204               total_tokens=response.usage.total_tokens,
+ 205               completion_tokens_details=response.usage.completion_tokens_details.__dict__ if response.usage.completion_tokens_details else {},
+ 206               prompt_tokens_details=response.usage.prompt_tokens_details.__dict__ if response.usage.prompt_tokens_details else {}
+ 207           )
+⚠️ No se extrajeron datos para Intermedia A.
+💤 Esperando 30 segundos antes de la siguiente categoría...
+
+🔎 Procesando categoría: Quinta A (3/17)
+🔎 Fetching hockey matches from: https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=3&nombre_torneo=144&subdivision=2
