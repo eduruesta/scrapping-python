@@ -1,111 +1,125 @@
-import asyncio
-from crawl4ai import AsyncWebCrawler
-from dotenv import load_dotenv
-from config import CSS_SELECTOR, REQUIRED_KEYS, CATEGORIAS_URLS
-from utils.data_utils import (
-    save_teams_to_csv, 
-    save_failed_urls, 
-    load_failed_urls, 
-    update_failed_urls,
-    save_to_mongodb
-)
-from utils.scraper_utils import (
-    fetch_and_process_page,
-    get_browser_config,
-    get_llm_strategy,
-)
-
-load_dotenv()
+import pandas as pd
+import time
+from bs4 import BeautifulSoup
+from pymongo import MongoClient
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from urllib.parse import urljoin
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import uuid
 
 
-async def crawl_standings(urls_to_process=None):
-    """
-    Main function to crawl hockey standings from the website.
+def get_driver():
+    """Configura y retorna una instancia de WebDriver con bypass de Cloudflare."""
+    options = Options()
+    options.add_argument("--headless")  # Modo sin interfaz
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    driver = webdriver.Chrome(options=options)
+    return driver
+
+
+def obtener_tabla_de_posiciones(url, categoria):
+    """Extrae la tabla de posiciones desde la URL de la categoría dada."""
+    driver = get_driver()
     
-    Args:
-        urls_to_process: List of (categoria, url) tuples to process. If None, uses all URLs.
-    """
-    browser_config = get_browser_config()
-    llm_strategy = get_llm_strategy()
-    session_id = "hockey_standings_session"
+    
+    driver.get(url)
 
-    all_teams = []
-    failed_urls = []
-    successful_urls = []  # Track successful URLs for retry mode
 
-    # Use provided URLs or all URLs from config
-    urls = urls_to_process if urls_to_process is not None else CATEGORIAS_URLS
+    try:
+        # Esperar a que la tabla aparezca en el DOM (máximo 20s)
+        WebDriverWait(driver, 40).until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="main"]/div/table'))
+        )
+        table = driver.find_element(By.XPATH, '//*[@id="main"]/div/table')
+    except Exception as e:
+        print(f"No se encontró la tabla de posiciones para la categoría {categoria}: {e}")
+        driver.quit()
+        return pd.DataFrame()
 
-    async with AsyncWebCrawler(config=browser_config) as crawler:
-        for i, (categoria, url) in enumerate(urls):
-            print(f"\n🔎 Procesando categoría: {categoria} ({i+1}/{len(urls)})")
-            teams, no_results_found = await fetch_and_process_page(
-                crawler=crawler,
-                base_url=url,
-                css_selector=CSS_SELECTOR,
-                llm_strategy=llm_strategy,
-                session_id=session_id,
-                required_keys=REQUIRED_KEYS,
-                categoria=categoria,
-            )
+    html_content = table.get_attribute('outerHTML')
+    driver.quit()
 
-            if not teams:
-                print(f"⚠️ No se extrajeron datos para {categoria}.")
-                failed_urls.append({"categoria": categoria, "url": url})
-            else:
-                print(f"✅ Se extrajeron {len(teams)} equipos para {categoria}.")
-                all_teams.extend(teams)
-                # Save teams for this category immediately
-                save_teams_to_csv(teams, categoria)
-                # Save to MongoDB
-                save_to_mongodb(teams, categoria)
-                # Track successful URL if in retry mode
-                if urls_to_process is not None:
-                    successful_urls.append({"categoria": categoria, "url": url})
+    soup = BeautifulSoup(html_content, 'html.parser')
+    rows = soup.find_all('tr')
 
-            # Aumentamos el tiempo de espera entre categorías
-            if i < len(urls) - 1:  # No esperar después de la última categoría
-                wait_time = 30  # 30 segundos entre categorías
-                print(f"💤 Esperando {wait_time} segundos antes de la siguiente categoría...")
-                await asyncio.sleep(wait_time)
+    data = []
+    headers = ['Pos', 'Club', 'Logo', 'Pts', 'PJ', 'PG', 'PE', 'PP', 'SP', 'GF', 'GC', 'DG', 'Bo', 'Sa', 'Categoria']
 
-    if not all_teams:
-        print("⚠️ No se extrajeron datos para ninguna categoría.")
-    else:
-        print(f"\n📄 Proceso completado. Se han guardado las tablas de posiciones para cada categoría en la carpeta 'output' y en MongoDB.")
+    for i, row in enumerate(rows):
+        if i > 1:  # Saltar los encabezados
+            cols = row.find_all('td')
+            if len(cols) >= 13:
+                pos = cols[0].get_text(strip=True)
+                club_td = cols[1]
+                club_name = club_td.get_text(strip=True)
+                try:
+                    img = club_td.find('img')
+                    logo_url = urljoin(url, img['src']) if img else None
+                except:
+                    logo_url = None
+                # Extraer el resto de los datos
+                stats = [col.get_text(strip=True) for col in cols[2:13]]
+                data.append([pos, club_name, logo_url, *stats, categoria])
+
+    df = pd.DataFrame(data, columns=headers)
+    return df
+
+
+def actualizar_en_mongodb(df):
+    """Actualiza la base de datos con los datos de la tabla de posiciones."""
+    client = MongoClient("mongodb+srv://bebiruesta90:Bebiwing11@mycluster.vheby.mongodb.net/")
+    db = client['maristapp']
+    collection = db['hockey_team_information']
+
+    for _, row in df.iterrows():
+        row_dict = row.to_dict()
+        query = {'Pos': row['Pos'], 'categoria': row['Categoria']}
         
-        # Mostrar el uso de tokens
-        print("\n📊 Uso de tokens:")
-        llm_strategy.show_usage()
+        existing_doc = collection.find_one(query)
+        if existing_doc:
+            if '_id' in row_dict:
+                del row_dict['_id']
+        else:
+            row_dict['_id'] = str(uuid.uuid4())
 
-    # Save failed URLs if any
-    if failed_urls:
-        save_failed_urls(failed_urls)
-        print("\n💡 Para reintentar solo las URLs fallidas, ejecuta el script con el argumento --retry")
-    
-    # Update failed URLs list if in retry mode and we have successful URLs
-    if urls_to_process is not None and successful_urls:
-        update_failed_urls(successful_urls)
+        collection.update_one(query, {'$set': row_dict}, upsert=True)
 
+categorias_urls = [
+    ('Primera A', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=1&nombre_torneo=144&subdivision=2'),
+    ('Intermedia A', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=2&nombre_torneo=144&subdivision=2'),
+    ('Quinta A', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=3&nombre_torneo=144&subdivision=2'),
+    ('Sexta A', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=4&nombre_torneo=144&subdivision=2'),
+    ('Séptima A', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=5&nombre_torneo=144&subdivision=2'),
+    ('Primera B', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=1&nombre_torneo=105&subdivision=27'),
+    ('Intermedia B', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=2&nombre_torneo=105&subdivision=27'),
+    ('Quinta B', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=3&nombre_torneo=105&subdivision=27'),
+    ('Sexta B', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=4&nombre_torneo=105&subdivision=27'),
+    ('Séptima B', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=5&nombre_torneo=105&subdivision=27'),
+    ('Primera C', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=1&nombre_torneo=99&subdivision=46'),
+    ('Intermedia C', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=2&nombre_torneo=99&subdivision=46'),
+    ('Quinta C', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=3&nombre_torneo=99&subdivision=46'),
+    ('Sexta C', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=4&nombre_torneo=99&subdivision=46'),
+    ('Séptima C', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=5&nombre_torneo=99&subdivision=46'),
+    ('Cuarta', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=10&nombre_torneo=134&subdivision=65'),
+    ('Segunda', 'https://www.ahba.com.ar/club.php?id=173&seccion=TABLA_DE_POSICIONES&genero=2&categoria=9&nombre_torneo=5&subdivision=65')
+]
 
-async def main():
-    """
-    Entry point of the script.
-    """
-    import sys
-    
-    if "--retry" in sys.argv:
-        failed_urls = load_failed_urls()
-        if not failed_urls:
-            print("No hay URLs fallidas para reintentar.")
-            return
-        
-        print(f"\n🔄 Reintentando {len(failed_urls)} URLs fallidas...")
-        urls_to_process = [(item["categoria"], item["url"]) for item in failed_urls]
-        await crawl_standings(urls_to_process)
+tabla_completa = pd.DataFrame()
+
+for categoria, url in categorias_urls:
+    df_categoria = obtener_tabla_de_posiciones(url, categoria)
+    if not df_categoria.empty:
+        tabla_completa = pd.concat([tabla_completa, df_categoria], ignore_index=True)
+        print(f"Tabla encontrada para {categoria}:\n", df_categoria)
     else:
-        await crawl_standings()
+        print(f"No se encontró tabla para {categoria}.")
 
-
-if __name__ == "__main__":
-    asyncio.run(main())
+if not tabla_completa.empty:
+    actualizar_en_mongodb(tabla_completa)
+    print("Datos actualizados en MongoDB.")
+else:
+    print("No se encontraron datos para actualizar en MongoDB.")
