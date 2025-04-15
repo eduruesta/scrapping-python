@@ -7,6 +7,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandl
 from dotenv import load_dotenv
 import subprocess
 import glob
+import json
 
 # Configuración de logging
 logging.basicConfig(
@@ -105,32 +106,47 @@ async def run_positions_script(update: Update, context: ContextTypes.DEFAULT_TYP
     except Exception as e:
         await update.message.reply_text(f"❌ Ocurrió un error: {str(e)}")
 
-async def run_results_script(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def run_results_script(update: Update, context: ContextTypes.DEFAULT_TYPE, retry=False):
     """Ejecuta el script hockey_team_last_and_next_matched.py y envía los resultados."""
 
     # Informar al usuario que el script está en ejecución
     await update.message.reply_text("⏳ Ejecutando script de resultados... esto puede tardar varios minutos.")
     
     try:
-        # Ejecutar el script con un timeout para evitar que se quede esperando indefinidamente
-        process = subprocess.run(["python", "hockey_team_last_and_next_matched.py"], 
-                              capture_output=True, text=True, timeout=300)  # 5 minutos de timeout
+        # Construir el comando para ejecutar el script
+        cmd = ["python", "hockey_team_last_and_next_matched.py"]
+        if retry:
+            cmd.append("--retry")
+        
+        # Ejecutar el script
+        process = subprocess.run(cmd, capture_output=True, text=True, timeout=300)  # 5 minutos de timeout
         
         # Verificar si la ejecución fue exitosa
         if process.returncode == 0:
-            await update.message.reply_text("✅ Script de resultados ejecutado con éxito. Enviando información...")
+            # Leer el archivo de categorías fallidas si existe
+            failed_categories = []
+            try:
+                with open('output/failed_categories.json', 'r') as f:
+                    failed_categories = json.load(f)
+            except FileNotFoundError:
+                pass
+
+            # Preparar el mensaje de resumen
+            summary = "📊 Resumen de ejecución:\n\n"
             
-            # Enviar mensaje con el resumen (últimas 10 líneas de la salida)
-            output_lines = process.stdout.strip().split('\n')
-            summary = '\n'.join(output_lines[-10:]) if len(output_lines) > 10 else process.stdout
-            
-            # Dividir el mensaje si es demasiado largo
-            if len(summary) > 4000:
-                chunks = [summary[i:i+4000] for i in range(0, len(summary), 4000)]
-                for i, chunk in enumerate(chunks):
-                    await update.message.reply_text(f"🏒 Resultados de partidos (parte {i+1}/{len(chunks)}):\n\n{chunk}")
+            if failed_categories:
+                summary += f"❌ Categorías que fallaron: {', '.join(failed_categories)}\n"
+                summary += "Puedes intentar nuevamente con el comando 'resultados retry'\n\n"
             else:
-                await update.message.reply_text(f"🏒 Resultados de partidos:\n\n{summary}")
+                summary += "✅ Todas las categorías se procesaron correctamente\n\n"
+            
+            # Agregar las últimas líneas de la salida
+            output_lines = process.stdout.strip().split('\n')
+            summary += "Últimas líneas de la ejecución:\n"
+            summary += '\n'.join(output_lines[-10:]) if len(output_lines) > 10 else process.stdout
+            
+            # Enviar el resumen
+            await update.message.reply_text(summary)
             
             # Enviar archivos generados
             matches_files = []
@@ -156,18 +172,7 @@ async def run_results_script(update: Update, context: ContextTypes.DEFAULT_TYPE)
     except subprocess.TimeoutExpired:
         await update.message.reply_text("❌ El script de resultados tardó demasiado tiempo en ejecutarse y se canceló.")
     except Exception as e:
-        await update.message.reply_text(f"❌ Ocurrió un error al obtener resultados: {str(e)}\nIntentando ejecutar el script con más memoria...")
-        try:
-            # Segundo intento con más memoria asignada
-            process = subprocess.run(["python", "-X", "utf8", "hockey_team_last_and_next_matched.py"], 
-                                  capture_output=True, text=True, timeout=300)
-            if process.returncode == 0:
-                await update.message.reply_text("✅ Script de resultados ejecutado con éxito en el segundo intento.")
-                # Procesamiento similar al anterior...
-            else:
-                await update.message.reply_text(f"❌ Error en el segundo intento: {process.stderr[:3900]}")
-        except Exception as e2:
-            await update.message.reply_text(f"❌ Error definitivo: {str(e2)}")
+        await update.message.reply_text(f"❌ Ocurrió un error al obtener resultados: {str(e)}")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Procesa los mensajes recibidos."""
@@ -178,10 +183,12 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif text == "posiciones retry":
         await run_positions_script(update, context, retry=True)
     elif text == "resultados":
-        await run_results_script(update, context)
+        await run_results_script(update, context, retry=False)
+    elif text == "resultados retry":
+        await run_results_script(update, context, retry=True)
     else:
         await update.message.reply_text(
-            "Comando no reconocido. Usa 'posiciones', 'posiciones retry' o 'resultados'."
+            "Comando no reconocido. Usa 'posiciones', 'posiciones retry', 'resultados' o 'resultados retry'."
         )
 
 def main():

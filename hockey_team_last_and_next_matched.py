@@ -29,86 +29,103 @@ def obtener_partidos(url, categoria):
     chrome_options.add_argument(f'--user-data-dir={user_data_dir}')
     
     try:
+        print(f"🔄 Iniciando Chrome para {categoria}...")
         driver = webdriver.Chrome(options=chrome_options)
+        print(f"🌐 Cargando URL: {url}")
         driver.get(url)
         time.sleep(5)  # Esperar a que la página cargue
 
-        # Refrescar para aplicar las cookies
-        driver.get(url)
-
         try:
+            print(f"🔍 Buscando tabla para {categoria}...")
+            # Primero verificar si la página se cargó correctamente
+            page_source = driver.page_source
+            if "Error" in page_source or "error" in page_source:
+                print(f"❌ La página muestra un error para {categoria}")
+                return pd.DataFrame(), pd.DataFrame(), categoria
+
+            # Seleccionar el XPath correcto según la categoría
+            if categoria == "Segunda":
+                xpath = "/html/body/section[3]/div/div/main/section[1]/section/div/table/tbody"
+            else:
+                xpath = "/html/body/section[3]/div/div/main/section[1]/section/div/table[2]"
+
+            print(f"🔍 Usando XPath: {xpath}")
             WebDriverWait(driver, 40).until(
-                EC.presence_of_element_located((By.XPATH, "/html/body/section[3]/div/div/main/section[1]/section/div/table[2]"))
+                EC.presence_of_element_located((By.XPATH, xpath))
             )
-            table = driver.find_element(By.XPATH, "/html/body/section[3]/div/div/main/section[1]/section/div/table[2]")
-        except Exception as e:
-            print(f"❌ No se encontró la tabla para {categoria}: {e}")
-            driver.quit()
-            return pd.DataFrame(), pd.DataFrame()
+            table = driver.find_element(By.XPATH, xpath)
+            print(f"✅ Tabla encontrada para {categoria}")
 
-        html_content = table.get_attribute("outerHTML")
-        driver.quit()
-        print(f"✅ Tabla HTML obtenida para {categoria}")
+            html_content = table.get_attribute("outerHTML")
+            print(f"✅ Tabla HTML obtenida para {categoria}")
 
-        soup = BeautifulSoup(html_content, 'html.parser')
-        rows = soup.find_all('tr')
+            soup = BeautifulSoup(html_content, 'html.parser')
+            rows = soup.find_all('tr')
 
-        headers = ['Nro', 'Day', 'Fecha', 'nro_fecha', 'Local', 'LogoLocal',
-                   'ResultadoLocal', 'ResultadoVisitante', 'Visitante', 'LogoVisitante', 'Categoria']
+            headers = ['Nro', 'Day', 'Fecha', 'nro_fecha', 'Local', 'LogoLocal',
+                       'ResultadoLocal', 'ResultadoVisitante', 'Visitante', 'LogoVisitante', 'Categoria']
 
-        data_last = []
-        data_next = []
-        equipo_a_buscar = 'SAN LUIS'
-        fecha_actual_encabezado = None
-        nro_fecha = 0
+            data_last = []
+            data_next = []
+            equipo_a_buscar = 'SAN LUIS'
+            fecha_actual_encabezado = None
+            nro_fecha = 0
 
-        for row in rows:
-            cols = row.find_all('td')
-            if len(cols) == 1:
-                strong_tag = cols[0].find('strong')
-                if strong_tag:
-                    texto = strong_tag.get_text(strip=True)
-                    if 'Fecha N°' in texto:
-                        fecha_actual_encabezado = texto.replace('Rueda N° ', 'R ').strip()
-                        nro_fecha += 1
-                continue
+            for row in rows:
+                cols = row.find_all('td')
+                if len(cols) == 1:
+                    strong_tag = cols[0].find('strong')
+                    if strong_tag:
+                        texto = strong_tag.get_text(strip=True)
+                        if 'Fecha N°' in texto:
+                            fecha_actual_encabezado = texto.replace('Rueda N° ', 'R ').strip()
+                            nro_fecha += 1
+                    continue
 
-            if len(cols) == 7 and fecha_actual_encabezado:
-                nro = cols[0].get_text(strip=True)
-                day_str = cols[1].get_text(strip=True)
-                local_name = cols[2].get_text(strip=True)
-                visitante_name = cols[5].get_text(strip=True)
+                if len(cols) == 7 and fecha_actual_encabezado:
+                    nro = cols[0].get_text(strip=True)
+                    day_str = cols[1].get_text(strip=True)
+                    local_name = cols[2].get_text(strip=True)
+                    visitante_name = cols[5].get_text(strip=True)
 
-                logo_local_url = urljoin(url, cols[2].find('img')['src']) if cols[2].find('img') else None
-                logo_visitante_url = urljoin(url, cols[5].find('img')['src']) if cols[5].find('img') else None
+                    logo_local_url = urljoin(url, cols[2].find('img')['src']) if cols[2].find('img') else None
+                    logo_visitante_url = urljoin(url, cols[5].find('img')['src']) if cols[5].find('img') else None
 
-                resultado_local = cols[3].get_text(strip=True)
-                resultado_visitante = cols[4].get_text(strip=True)
+                    resultado_local = cols[3].get_text(strip=True)
+                    resultado_visitante = cols[4].get_text(strip=True)
 
-                if equipo_a_buscar in local_name or equipo_a_buscar in visitante_name:
-                    try:
-                        match_date = datetime.strptime(day_str, "%d/%m/%Y").date()
-                    except Exception as e:
-                        print(f"⚠️ Error al parsear fecha {day_str} en partido {nro}: {e}")
-                        continue
+                    if equipo_a_buscar in local_name or equipo_a_buscar in visitante_name:
+                        try:
+                            match_date = datetime.strptime(day_str, "%d/%m/%Y").date()
+                        except Exception as e:
+                            print(f"⚠️ Error al parsear fecha {day_str} en partido {nro}: {e}")
+                            continue
 
-                    match = [nro, day_str, fecha_actual_encabezado, nro_fecha, local_name, logo_local_url,
-                             resultado_local, resultado_visitante, visitante_name, logo_visitante_url, categoria]
+                        match = [nro, day_str, fecha_actual_encabezado, nro_fecha, local_name, logo_local_url,
+                                 resultado_local, resultado_visitante, visitante_name, logo_visitante_url, categoria]
 
-                    if match_date < date.today():
-                        data_last.append(match)
-                    elif match_date > date.today():
-                        data_next.append(match)
-                    else:
-                        if resultado_local or resultado_visitante:
+                        if match_date < date.today():
                             data_last.append(match)
-                        else:
+                        elif match_date > date.today():
                             data_next.append(match)
+                        else:
+                            if resultado_local or resultado_visitante:
+                                data_last.append(match)
+                            else:
+                                data_next.append(match)
 
-        df_last = pd.DataFrame(data_last, columns=headers)
-        df_next = pd.DataFrame(data_next, columns=headers)
-        print(f"✅ {len(df_last)} partidos jugados y {len(df_next)} próximos partidos encontrados para {categoria}")
-        return df_last, df_next
+            df_last = pd.DataFrame(data_last, columns=headers)
+            df_next = pd.DataFrame(data_next, columns=headers)
+            print(f"✅ {len(df_last)} partidos jugados y {len(df_next)} próximos partidos encontrados para {categoria}")
+            return df_last, df_next, None  # None indica que no hubo error
+
+        except Exception as e:
+            print(f"❌ Error al procesar la tabla para {categoria}: {str(e)}")
+            # Guardar el HTML de la página para debug
+            with open(f'debug_logs/{categoria}_error.html', 'w') as f:
+                f.write(driver.page_source)
+            print(f"📝 HTML guardado en debug_logs/{categoria}_error.html")
+            return pd.DataFrame(), pd.DataFrame(), categoria
 
     finally:
         # Limpiar el directorio temporal después de usar
@@ -153,43 +170,74 @@ def actualizar_en_mongodb(df, collection_name):
     print(f"✅ {len(df)} documentos actualizados en '{collection_name}'")
 
 
-# URLs de categorías
-categorias_urls = [
-    ('Primera A', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=1&nombre_torneo=144&subdivision=2'),
-    ('Intermedia A', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=2&nombre_torneo=144&subdivision=2'),
-    ('Quinta A', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=3&nombre_torneo=144&subdivision=2'),
-    ('Sexta A', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=4&nombre_torneo=144&subdivision=2'),
-    ('Séptima A', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=5&nombre_torneo=144&subdivision=2'),
-    ('Primera B', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=1&nombre_torneo=105&subdivision=27'),
-    ('Intermedia B', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=2&nombre_torneo=105&subdivision=27'),
-    ('Quinta B', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=3&nombre_torneo=105&subdivision=27'),
-    ('Sexta B', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=4&nombre_torneo=105&subdivision=27'),
-    ('Séptima B', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=5&nombre_torneo=105&subdivision=27'),
-    ('Primera C', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=1&nombre_torneo=99&subdivision=46'),
-    ('Intermedia C', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=2&nombre_torneo=99&subdivision=46'),
-    ('Quinta C', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=3&nombre_torneo=99&subdivision=46'),
-    ('Sexta C', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=4&nombre_torneo=99&subdivision=46'),
-    ('Séptima C', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=5&nombre_torneo=99&subdivision=46'),
-    ('Cuarta', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=10&nombre_torneo=134&subdivision=65'),
-    ('Segunda', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=9&nombre_torneo=5&subdivision=65')
-]
+def main(retry_categories=None):
+    # URLs de categorías
+    categorias_urls = [
+        ('Primera A', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=1&nombre_torneo=144&subdivision=2'),
+        ('Intermedia A', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=2&nombre_torneo=144&subdivision=2'),
+        ('Quinta A', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=3&nombre_torneo=144&subdivision=2'),
+        ('Sexta A', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=4&nombre_torneo=144&subdivision=2'),
+        ('Séptima A', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=5&nombre_torneo=144&subdivision=2'),
+        ('Primera B', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=1&nombre_torneo=105&subdivision=27'),
+        ('Intermedia B', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=2&nombre_torneo=105&subdivision=27'),
+        ('Quinta B', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=3&nombre_torneo=105&subdivision=27'),
+        ('Sexta B', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=4&nombre_torneo=105&subdivision=27'),
+        ('Séptima B', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=5&nombre_torneo=105&subdivision=27'),
+        ('Primera C', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=1&nombre_torneo=99&subdivision=46'),
+        ('Intermedia C', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=2&nombre_torneo=99&subdivision=46'),
+        ('Quinta C', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=3&nombre_torneo=99&subdivision=46'),
+        ('Sexta C', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=4&nombre_torneo=99&subdivision=46'),
+        ('Séptima C', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=5&nombre_torneo=99&subdivision=46'),
+        ('Cuarta', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=10&nombre_torneo=134&subdivision=65'),
+        ('Segunda', 'https://www.ahba.com.ar/club.php?id=173&seccion=FIXTURE&genero=2&categoria=9&nombre_torneo=5&subdivision=65')
+    ]
 
-df_last_total = pd.DataFrame()
-df_next_total = pd.DataFrame()
+    # Si se especifican categorías para reintentar, filtrar solo esas
+    if retry_categories:
+        categorias_urls = [cat for cat in categorias_urls if cat[0] in retry_categories]
 
-for categoria, url in categorias_urls:
-    df_last, df_next = obtener_partidos(url, categoria)
-    if not df_last.empty:
-        df_last_total = pd.concat([df_last_total, df_last], ignore_index=True)
-    if not df_next.empty:
-        df_next_total = pd.concat([df_next_total, df_next], ignore_index=True)
+    df_last_total = pd.DataFrame()
+    df_next_total = pd.DataFrame()
+    failed_categories = []
 
-if not df_last_total.empty:
-    actualizar_en_mongodb(df_last_total, 'hockey_team_last_matches')
-else:
-    print("⚠️ No se encontraron partidos jugados en ninguna categoría.")
+    for categoria, url in categorias_urls:
+        df_last, df_next, failed_category = obtener_partidos(url, categoria)
+        if failed_category:
+            failed_categories.append(failed_category)
+        if not df_last.empty:
+            df_last_total = pd.concat([df_last_total, df_last], ignore_index=True)
+        if not df_next.empty:
+            df_next_total = pd.concat([df_next_total, df_next], ignore_index=True)
 
-if not df_next_total.empty:
-    actualizar_en_mongodb(df_next_total, 'hockey_team_next_matches')
-else:
-    print("⚠️ No se encontraron partidos futuros en ninguna categoría.")
+    # Guardar las categorías que fallaron en un archivo
+    if failed_categories:
+        with open('output/failed_categories.json', 'w') as f:
+            json.dump(failed_categories, f)
+
+    if not df_last_total.empty:
+        actualizar_en_mongodb(df_last_total, 'hockey_team_last_matches')
+    else:
+        print("⚠️ No se encontraron partidos jugados en ninguna categoría.")
+
+    if not df_next_total.empty:
+        actualizar_en_mongodb(df_next_total, 'hockey_team_next_matches')
+    else:
+        print("⚠️ No se encontraron partidos futuros en ninguna categoría.")
+
+    return failed_categories
+
+if __name__ == "__main__":
+    import sys
+    retry_categories = None
+    if len(sys.argv) > 1 and sys.argv[1] == "--retry":
+        try:
+            with open('output/failed_categories.json', 'r') as f:
+                retry_categories = json.load(f)
+        except FileNotFoundError:
+            print("No hay categorías fallidas para reintentar")
+            sys.exit(1)
+    failed = main(retry_categories)
+    if failed:
+        print(f"❌ Categorías que fallaron: {', '.join(failed)}")
+    else:
+        print("✅ Todas las categorías se procesaron correctamente")
