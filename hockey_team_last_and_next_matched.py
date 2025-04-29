@@ -44,10 +44,8 @@ def obtener_partidos(url, categoria):
                 return pd.DataFrame(), pd.DataFrame(), categoria
 
             # Seleccionar el XPath correcto según la categoría
-            if categoria == "Segunda":
-                xpath = "/html/body/section[3]/div/div/main/section[1]/section/div/table/tbody"
-            else:
-                xpath = "/html/body/section[3]/div/div/main/section[1]/section/div/table[2]"
+            
+            xpath = "/html/body/section[3]/div/div/main/section[1]/section/div/table/tbody"
 
             print(f"🔍 Usando XPath: {xpath}")
             WebDriverWait(driver, 40).until(
