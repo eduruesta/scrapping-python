@@ -43,16 +43,33 @@ def obtener_partidos(url, categoria):
                 print(f"❌ La página muestra un error para {categoria}")
                 return pd.DataFrame(), pd.DataFrame(), categoria
 
-            # Seleccionar el XPath correcto según la categoría
+            # Lista de XPaths a intentar
+            xpaths = [
+                "/html/body/section[3]/div/div/main/section[1]/section/div/table[2]/tbody",
+                "/html/body/section[3]/div/div/main/section[1]/section/div/table/tbody"
+            ]
             
-            xpath = "/html/body/section[3]/div/div/main/section[1]/section/div/table/tbody"
-
-            print(f"🔍 Usando XPath: {xpath}")
-            WebDriverWait(driver, 40).until(
-                EC.presence_of_element_located((By.XPATH, xpath))
-            )
-            table = driver.find_element(By.XPATH, xpath)
-            print(f"✅ Tabla encontrada para {categoria}")
+            table = None
+            used_xpath = None
+            
+            # Intentar cada XPath hasta que uno funcione
+            for xpath in xpaths:
+                try:
+                    print(f"🔍 Intentando XPath: {xpath}")
+                    WebDriverWait(driver, 20).until(
+                        EC.presence_of_element_located((By.XPATH, xpath))
+                    )
+                    table = driver.find_element(By.XPATH, xpath)
+                    used_xpath = xpath
+                    print(f"✅ Tabla encontrada para {categoria} usando XPath: {xpath}")
+                    break
+                except Exception as e:
+                    print(f"⚠️ XPath {xpath} falló: {str(e)}")
+                    continue
+            
+            if table is None:
+                print(f"❌ No se pudo encontrar la tabla con ningún XPath para {categoria}")
+                return pd.DataFrame(), pd.DataFrame(), categoria
 
             html_content = table.get_attribute("outerHTML")
             print(f"✅ Tabla HTML obtenida para {categoria}")
@@ -146,6 +163,11 @@ def actualizar_en_mongodb(df, collection_name):
         print(f"🧹 Eliminados {result.deleted_count} documentos antiguos (<= {today_str})")
 
     for _, row in df.iterrows():
+        # Filtrar registros que contienen "Torneo N°" en el campo date
+        if "Torneo N°" in str(row['Fecha']):
+            print(f"⚠️ Ignorando registro con fecha inválida: {row['Fecha']}")
+            continue
+
         partido_id = f"{row['Categoria'].replace(' ','')}_{row['Fecha'].replace(' ','')}_{row['Day'].replace('/','')}_{row['Local'].replace(' ','')}_{row['Visitante'].replace(' ','')}"
         partido = {
             '_id': partido_id,
